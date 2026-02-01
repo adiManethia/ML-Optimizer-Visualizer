@@ -95,7 +95,7 @@ python main.py
 
 ## Project Structure
 ```bash
-ml-optimizers-visualized/
+ml-optimizers-visualizer/
 │
 ├── optimizers/
 │   ├── gd.py
