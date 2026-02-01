@@ -1,77 +1,128 @@
-# ML Optimizer Visualizer
-
+# ML Optimizer Visualizer  
 **Compare optimization algorithms in linear regression with synthetic data**  
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![NumPy](https://img.shields.io/badge/numpy-%23013243.svg?style=for-the-badge&logo=numpy&logoColor=white) ![Matplotlib](https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=for-the-badge&logo=Matplotlib&logoColor=black)
 
-This project demonstrates how different optimizers — **Gradient Descent (GD), Stochastic Gradient Descent (SGD), Momentum, RMSProp, and Adam** — converge on a 1D linear regression problem. Users can generate controllable synthetic data, run different optimizers, and visualize results.
+This project lets you visually compare five classic optimization algorithms on a simple **1D linear regression** task using synthetic data:
 
----
+- **Gradient Descent (GD)**
+- **Stochastic Gradient Descent (SGD)**
+- **Momentum**
+- **RMSProp**
+- **Adam**
 
-## Features
+You can observe convergence speed, stability, oscillation behavior, and how each optimizer handles varying gradient magnitudes and noise.
 
-- Generate **synthetic linear regression data** with controllable noise and gradient scales  
-- Implement five optimizers from scratch:
-  - Vanilla **Gradient Descent (GD)**  
-  - **Stochastic Gradient Descent (SGD)**  
-  - **Momentum-based GD**  
-  - **RMSProp**  
-  - **Adam**  
-- Compare optimizers visually using:
-  - Loss curves (linear and log scale)  
-  - Weight (`w`) and bias (`b`) convergence  
-- Save plots for documentation or reports  
-- Quantitative summary table of final losses and iterations to threshold  
+## ✨ Features
 
----
-## Data Generation
+- Generate **controllable synthetic linear data** (adjust noise, feature scale, true parameters)
+-  Five optimizers implemented **from scratch** (no PyTorch/TensorFlow)
+-  Rich visualizations:
+  - Loss curves (linear + log scale)
+  - Parameter trajectories (`w` and `b`)
+  - Combined comparison plots
+- Quantitative summary table (final loss + iterations to reach threshold)
+- Plots automatically saved to `outputs/` folder
 
-We generate a **synthetic linear dataset**:
+## Example Results
 
-$$y = w_{\text{true}} \cdot X + b_{\text{true}} + \epsilon$$
+### Summary Table
 
-Where:
-- $x$ = input feature, ranging across small and large values to create varying gradient magnitudes  
-- $w_{\text{true}}$, $b_{\text{true}}$ = true slope and intercept (default 2.0 and 3.0)  
-- $\epsilon \sim \mathcal{N}(0, \sigma^2)$ = Gaussian noise to simulate real-world imperfections  
-- Mixed small and large $x$ values create **ill-conditioned gradients** → highlights optimizer differences  
+```text
+Optimizer Comparison Summary
+──────────────────────────────────────────────────
+Optimizer   | Final Loss   | Iters < 0.05
+──────────────────────────────────────────────────
+GD          | 0.032646     | 255
+SGD         | 0.039081     | 248
+Momentum    | 0.032568     | 240
+RMSProp     | 0.032864     | 308
+Adam        | 0.032512     | 99
+```
+
+→ **Adam reaches a good loss region ~2.5× faster** (in iteration count) in this run.
+
+### Visualizations
+
+#### Adam – Loss Curve
+![Adam Loss Curve](outputs/loss_adam.png)
+
+#### All Optimizers – Weight (`w`) Convergence
+![Weight Convergence](outputs/w_convergence.png)
+
+> Adam converges to the true value fastest and remains very stable. SGD shows the most post-convergence jitter.
+
+
+
+## Dataset
+
+Synthetic data is generated according to:
+
+$$
+y = w_{\text{true}} \cdot x + b_{\text{true}} + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \sigma^2)
+$$
+
+Characteristics designed to highlight optimizer differences:
+
+- **Mixed feature scales**: small (~0–0.5), medium (~1.5–3), large (~5–6) values → creates varying gradient magnitudes
+- **Gaussian noise** → realistic stochastic fluctuations
+- **Shuffled order** → prevents any artificial ordering advantage
+
+Default parameters:  
+`w_true = 2.0`, `b_true = 3.0`, `noise_std = 0.2`
 
 ## Installation
 
 ```bash
+# Clone the repository
 git clone https://github.com/adiManethia/ML-Optimizer-Visualizer.git
+
+# Enter the project directory
 cd ML-Optimizer-Visualizer
-pip install -r requirements.txt  # numpy, matplotlib
-```
-## Usage 
-```bash
+
+# Install dependencies (very lightweight)
+pip install -r requirements.txt
+# → numpy, matplotlib
+
+# Start
 python main.py
 ```
-This will:
-- Generate synthetic data (small + medium + large X values, moderate noise)
-- Train all optimizer on the data
-- Save plots in the ```outputs/``` folder
-- Print a summary table like:
-  ```bash
-  Optimizer Comparison Summary
-  --------------------------------------------------
-  Optimizer  | Final Loss   | Iters < 0.05
-  --------------------------------------------------
-  GD         | 0.032646     | 255
-  SGD        | 0.039081     | 248
-  Momentum   | 0.032568     | 240
-  RMSProp    | 0.032864     | 308
-  Adam       | 0.032512     | 99
-  ```
-  
 
-## Why Adam Wins in This Demo
-- Dataset has mixed gradient magnitudes --> small, medium, large X values
-- Noise introduces fluctuations --> GD/SGD oscillate more
-- Adam adapts learning rate per parameter --> converges faster
+## Why Adam Usually Wins in This Setup
+- Mixed gradient magnitudes across the feature range → benefits from per-parameter learning rate adaptation
+- Noise introduces stochasticity → Adam's combination of momentum + adaptive scaling handles fluctuations well
+- Bias correction helps during the early training phase
+- With a reasonably tuned learning rate, Adam often converges much faster on this kind of simple-but-not-perfectly-scaled problem
 
-
-
-
-
+## Project Structure
+```bash
+ml-optimizers-visualized/
+│
+├── optimizers/
+│   ├── gd.py
+│   ├── sgd.py
+│   ├── momentum.py
+│   ├── rmsprop.py
+│   └── adam.py
+│
+├── utils/
+│   ├── data.py
+│   ├── loss.py
+│   └── visualize.py
+│
+├── outputs/                # Folder where all generated plots are saved
+│   ├── loss_gd.png
+│   ├── loss_sgd.png
+│   ├── loss_momentum.png
+│   ├── loss_rmsprop.png
+│   ├── loss_adam.png
+│   ├── w_convergence.png
+│   ├── b_convergence.png      
+│   
+├── main.py
+├── README.md
+├── requirements.txt
+└── .gitignore
+```
 
 
 
